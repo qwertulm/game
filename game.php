@@ -96,7 +96,12 @@ class PersonProcessor {
       new Person('Katulskiy' ),
       new Person('Ruban' ), 
       new Person('Ancipovich'), 
-      new Person('Cimba'  ),
+      new Person('Cimbaluk'  ),
+      new Person('Naruha'),
+      new Person('Batia'),
+      new Person('Klimovec'),
+      new Person('Undel'),
+      new Person('Zhdan')
     ];
     
     $this->pers_in_game = [];
