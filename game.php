@@ -131,6 +131,8 @@ class PersonProcessor {
     $this->printLocation($person);
   }
   
+ 
+  
   public function changeLocation($person) {
     $old_place_key = array_search(
       $person->get_place(),
@@ -176,6 +178,16 @@ class PersonProcessor {
   public function getPersonsCount() {
     return sizeof($this->pers_in_game);
   }
+  
+  public function persInPlace($place) {
+    $ans = 0;
+    foreach ($this->pers_in_game as $pers) {
+      if ($pers->get_place() == $place) {
+        $ans++;
+      }
+    }
+    return $ans;
+  }
 }
 
 class AskProcessor {
@@ -188,6 +200,8 @@ class AskProcessor {
   public function addResult($result) {
     $this->results[] = $result;
   }
+ 
+  
   
   public function printResults() {
     $consoleWidth = exec('echo $COLUMNS') ?? 20;
@@ -208,13 +222,58 @@ class AskProcessor {
     }
     echo "\n";
   }
+  
+  public function whereIs($person, $persPr) {
+        echo 'where is ';
+        $person->print();
+        echo "?\n";
+        foreach ($persPr->places as $place) {
+            echo $place->id . '. ';
+            $place->print();
+            echo "\n";
+        }
+        global $fp;
+        $ans = trim(fgets($fp, 1024));
+        $result = ($ans == $person->get_place()->id);
+        if ($result) {
+            Console::log('True', 'green');
+        } else {
+            Console::log('False, ', 'red', false);
+            $persPr->printLocation($person);
+            
+        }
+        $this->addResult($result);
+
+        
+  }
+  
+  public function howMany($place, $persPr) {
+    echo 'how many people ';
+    $place->print();
+    echo "\n";
+    global $fp;
+    $ans = trim(fgets($fp, 1024));
+    $result = ($ans == $persPr->persInPlace($place));
+    if ($result) {
+            Console::log('True', 'green');
+        } else {
+            Console::log('False, ' . $persPr->persInPlace($place), 'red', false);
+           
+            
+        }
+        $this->addResult($result);
+
+    
+  }
+  
+  
 }
 
 
 
 
-$processor = new PersonProcessor();
-$processor->gameStart();
+$persPr = new PersonProcessor();
+$persPr->gameStart();
 $askPoss = 1;
 $askPr = new AskProcessor();
 $stepCount = 0;
@@ -225,53 +284,45 @@ while (true) {
     }
     
     if ("?\n" == $line) {
-        $processor->printLocations();
+        $persPr->printLocations();
         continue;
     }
     
     if ("add\n" == $line) {
-        $processor->addPerson();
+        $persPr->addPerson();
     }
     
     if ("rm\n" == $line) {
-        $processor->rmPerson();
+        $persPr->rmPerson();
     }
     
     system('clear');
     $askPr->printResults();
     echo (
       'st: ' . $stepCount .
-      ' ps: ' . $processor->getPersonsCount() . "\n"
+      ' ps: ' . $persPr->getPersonsCount() . "\n"
     );
     
-    $person = $processor->getRandomPerson();    
+    $person = $persPr->getRandomPerson();    
        
     $ask = rand(0,$askPoss) == 0;
     if ($ask) $askPoss = 4; else $askPoss--;
     
-    if ($ask) {   
-        echo 'where is ';
-        $person->print();
-        echo "?\n";
-        foreach ($processor->places as $place) {
-            echo $place->id . '. ';
-            $place->print();
-            echo "\n";
-        }
-        $ans = trim(fgets($fp, 1024));
-        $result = $ans == $person->get_place()->id;
-        if ($result) {
-            Console::log('True', 'green');
-        } else {
-            Console::log('False, ', 'red', false);
-            $processor->printLocation($person);
-            
-        }
-        $askPr->addResult($result);
+    if ($ask) { 
+      if (rand(0,0) == 0) {
+        $askPr->howMany(
+          $person->get_place(),
+          $persPr
+        );
+      } else {
+        $askPr->whereIs($person, $persPr);
+      }
+       
         
     } else {
-      $processor->changeLocation($person);
+      $persPr->changeLocation($person);
       $stepCount++;
     }
+
 }
     
