@@ -2,37 +2,50 @@
 include_once './console.php';
 $fp = fopen('php://stdin', 'r');
 
-const COLORS = ['blue', 'green', 'cyan', 'red', 'purple', 'brown', 'light_gray'];
+const COLORS = [
+'bold',   
+'dim',
+'dark_gray',
+'blue', 
+'light_blue',
+'green'       , 
+'light_green' ,
+'cyan'        , 
+'light_cyan' ,
+'red'       , 
+'light_red'  ,
+'purple'      , 
+'light_purple',
+'brown'        ,
+'yellow'      ,
+'light_gray'   , 
+'white'        ,
+'normal'      ,
+ 
+];
 
 class Person {
   private $name;
   private $place;
+  private $color;
   
-  public function __construct($name) {
+  public function __construct($name, $color) {
       $this->name = $name;
       $this->place = new EmptyPlace();
+      $this->color = $color;
   }
  
   public function print() {
     $color = $this->get_color();
-    Console::log(
-        $this->name,
-        $color,
-        false
+    echo Console::$color(
+      $this->name, 
+      'italic'
     );
   }
   
   private function get_color()
   {
-    $sum = 0;
-
-    $array = preg_split('//', $this->name, -1, PREG_SPLIT_NO_EMPTY);
-    foreach ($array as $val) {
-        $sum += ord($val);
-    }
-    
-    $color_id =  $sum % sizeof(COLORS);
-    return COLORS[$color_id];
+    return $this->color;
   }
   
   public function set_place($place) {
@@ -84,24 +97,27 @@ class PersonProcessor {
   public function __construct() {
     $this->places = [
       //  new EmptyPlace(),
-      new Place(1, 'prishol v batalion', 'green'),
+      new Place(1, 'prishol v batalion', 'brown'),
       new Place(2, 'ushol v shtab', 'red'),
-      new Place(3, 'ushol v park', 'cyan'),
-      new Place(4, 'ushol domoi', 'blue'),
+      new Place(3, 'ushol v park', 'brown'),
+      new Place(4, 'ushol domoi', 'dark_gray'),
 
     ];
     
     $this->pers_free = [
-      new Person('Chirich'), 
-      new Person('Katulskiy' ),
-      new Person('Ruban' ), 
-      new Person('Ancipovich'), 
-      new Person('Cimbaluk'  ),
-      new Person('Naruha'),
-      new Person('Batia'),
-      new Person('Klimovec'),
-      new Person('Undel'),
-      new Person('Zhdan')
+      new Person('Undel', 'white'),
+      new Person('Ancipovich', 'white'), 
+      new Person('Katulskiy', 'white'),
+      
+      new Person('Ruban', 'purple'), 
+      new Person('Chirich', 'purple'), 
+      new Person('Cimbaluk', 'purple'),
+      new Person('Klimovec', 'purple'),
+      
+      new Person('Batia', 'light_red'),
+      
+      new Person('Naruha', 'brown'),
+      new Person('Zhdan', 'brown')
     ];
     
     $this->pers_in_game = [];
@@ -309,7 +325,7 @@ while (true) {
     if ($ask) $askPoss = 4; else $askPoss--;
     
     if ($ask) { 
-      if (rand(0,0) == 0) {
+      if ($stepCount % 2 == 0) {
         $askPr->howMany(
           $person->get_place(),
           $persPr
