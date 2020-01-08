@@ -38,7 +38,7 @@ class Person {
   public function print() {
     $color = $this->get_color();
     echo Console::$color(
-      $this->name, 
+      $this->name,
       'italic'
     );
   }
@@ -97,7 +97,7 @@ class PersonProcessor {
   public function __construct() {
     $this->places = [
       //  new EmptyPlace(),
-      new Place(1, 'prishol v batalion', 'brown'),
+      new Place(1, 'prishol v batalion', 'green'),
       new Place(2, 'ushol v shtab', 'red'),
       new Place(3, 'ushol v park', 'brown'),
       new Place(4, 'ushol domoi', 'dark_gray'),
